@@ -2,7 +2,7 @@
 Unlock or Lock your linux system over a HTTP Channel. With a smartphone for example.
 
 # How it looks like
-Type your (locki-)password into your smartphone. With the button 'unlock' you authenticate your predefined useracount in the pam-ecosystem. 
+Type your (locki-)password into your smartphone. With the button 'unlock' you authenticate your predefined user account in the pam-ecosystem. 
 This allows you to unlock the greeter or screensaver with your smartphone. Or even sudo can be unlocked like this.
 A token is only valid once and expires after 10 seconds. This allows you to detect malicious behaviour.
 
@@ -13,11 +13,11 @@ The machine recognizes if the smartphone A or B sent a valid token. But in the m
 But its not on my priority list).
 
 # Security
-It is assumed, that the adversery has no control over the useraccount to authenticate, root and the used http-client (aka smartphone).
+It is assumed, that the adversery has no control over the user account to authenticate, root and the used http-client (aka smartphone).
 Under this assumptions the goal is that:
- ' no other party can learn something over the shared secret
- ' no other party can use captured data without beeing noticed.
- ' no other party can not "dos" the system with caputred data.
+ * no other party can learn something over the shared secret
+ * no other party can use captured data without beeing noticed.
+ * no other party can not "dos" the system with caputred data.
 
 But there is still the posibility of a compromised useraccount on the system (webserver, etc) or an active or passive attacker on the communication channel.
 
@@ -38,9 +38,9 @@ reinstall the software and change the secrets.
 
 # How it works
 There exists 3 parts:
- ' the pam module pam_http.so, used to integrate the lockid into pam
- ' the lockid service: a python webserver used for the communication
- ' the locki app: a python script for linux or with buildozer on android. For the user to interact with the system.
+ * the pam module pam_http.so, used to integrate the lockid into pam
+ * the lockid service: a python webserver used for the communication
+ * the locki app: a python script for linux or with buildozer on android. For the user to interact with the system.
 
 ## pam_http.so
 Its a really easy module: it reads the content from /tmp/http_success and when there is an entry, no longer than 10 seconds it pam-authenticates it.
