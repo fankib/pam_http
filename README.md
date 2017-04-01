@@ -66,6 +66,18 @@ or use the template under ./systemd/lockid.service to create a systemd service (
 run `$ python ./locki/main.py`
 or build with buildozer an android app: `[./locki]$ buildozer android debug deploy run`
 
+# Generate new secret
+As it is not recommended to use the default password 'supersecret' in any way, you have to generate a new secret. 
 
+Use the python shell for this:
+
+```cd ./locki/
+python
+>>> import client
+>>> client.createMyDigest(b'<new-secret>')
+'5a472ea70d5c410a9a557794cacec6227f8c5b08e31547140c4f4ee598812918'
+ctrl+d```
+
+configure the lockid with the new hash
 
 

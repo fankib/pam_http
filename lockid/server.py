@@ -1,15 +1,18 @@
 import random
 import string
 import time
+import os
 import os.path
 from flask import Flask
 from Crypto.Hash import SHA256
 from subprocess import call
 
+# 603d4eb5739b1937621dfd37b838837d145c1c293b44045a608a1564d4e0d520
+
 max_challenge_age = 3
 file_challenge = '/tmp/challenge'
 file_http_success = '/tmp/http_success'
-secret_user_hash = 'f75778f7425be4db0369d09af37a6c2b9a83dea0e53e7bd57412e4b060e607f7' #supersecret
+default_user_hash = 'f75778f7425be4db0369d09af37a6c2b9a83dea0e53e7bd57412e4b060e607f7' #supersecret
 user_name = 'beni'
 command_unlock = ['/usr/bin/xscreensaver-command', '-deactivate'];
 command_lock = ['/usr/bin/xscreensaver-command', '-lock']
@@ -21,6 +24,13 @@ app = Flask(__name__)
 def initFile(file_name):
 	call(['/usr/bin/touch', file_name])
 	call(['/usr/bin/chmod', '600', file_name])
+
+def getUserSecret():
+	try:
+		return os.environ['USER_SECRET']
+	except:
+		print('use default secret!! change it with export USER_SECRET=<hash-of-new-secret>!')
+		return default_user_hash;
 
 def randomword(length):
    return ''.join(random.choice(string.ascii_letters) for i in range(length))
@@ -50,7 +60,7 @@ def validToken(token):
 	challenge = readChallenge()
 	h = SHA256.new()
 	h.update(challenge)
-	h.update(secret_user_hash.encode('ASCII'))
+	h.update(getUserSecret().encode('ASCII'))
 	result = h.hexdigest()
 	if(token == result):
 		generateChallenge()
