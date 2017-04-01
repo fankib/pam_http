@@ -59,11 +59,11 @@ Install all the dependencies for python or buildozer first (or when it fails)..
 run the script `$ ./pam/build`
 
 ## lockid:
-run `python ./lockid/server.py`
+run `$ python ./lockid/server.py`
 or use the template under ./systemd/lockid.service to create a systemd service (instructions in the file)
 
 ## locki:
-run `python ./locki/main.py`
+run `$ python ./locki/main.py`
 or build with buildozer an android app: `buildozer android release deploy run`
 
 
