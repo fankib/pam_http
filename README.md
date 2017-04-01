@@ -64,7 +64,7 @@ or use the template under ./systemd/lockid.service to create a systemd service (
 
 ## locki:
 run `$ python ./locki/main.py`
-or build with buildozer an android app: `buildozer android release deploy run`
+or build with buildozer an android app: `$ buildozer android release deploy run`
 
 
 
