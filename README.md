@@ -19,8 +19,6 @@ Under this assumptions the goal is that:
  * no other party can use captured data without beeing noticed.
  * no other party can not "dos" the system with caputred data.
 
-But there is still the posibility of a compromised useraccount on the system (webserver, etc) or an active or passive attacker on the communication channel.
-
 ## compromised user account
 This can be prevented with correct pam configuration. Do not allow this authentication method for switching user services.
 The used files to exchange inter process data are only visible to the user and root.
@@ -43,7 +41,7 @@ There exists 3 parts:
  * the locki app: a python script for linux or with buildozer on android. For the user to interact with the system.
 
 ## pam_http.so
-Its a really easy module: it reads the content from /tmp/http_success and when there is an entry, no longer than 10 seconds it pam-authenticates it.
+Its a really easy module: it reads the content from /tmp/http_success and when there is an entry, no older than 10 seconds it pam-authenticates it.
 After a successfull authentication the file is cleared.
 
 ## lockid - webservice
@@ -55,17 +53,18 @@ The deamon does not need to know the secret in plaintext. It can be substituated
 This is a simple implementation of a client. It provides a form for the server to connect and the secret to input.
 
 # Installation 
+Install all the dependencies for python or buildozer first (or when it fails)..
 
 ## pam_http:
-run the script "./pam/build"
+run the script `$ ./pam/build`
 
 ## lockid:
-run python ./lockid/server.py
-or use the template under ./systemd/ to create a systemd service (instructions in the file)
+run `python ./lockid/server.py`
+or use the template under ./systemd/lockid.service to create a systemd service (instructions in the file)
 
 ## locki:
-run python ./locki/main.py
-or build with buildozer an android app: buildozer android release deploy run
+run `python ./locki/main.py`
+or build with buildozer an android app: `buildozer android release deploy run`
 
 
 
