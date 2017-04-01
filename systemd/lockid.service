@@ -1,0 +1,23 @@
+[Unit]
+Description=Locki Authentication Server
+After=network.target
+
+[Service]
+Environment="DISPLAY=:0"
+Type=simple
+User=<user-t-ounlock>
+ExecStart=/usr/bin/python <path-to-repo>/lockid/server.py
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+
+
+# prepare installation
+#  fill in the 2 gaps.
+#
+# Install under Arch:
+#  Copy this file to /etc/systemd/system
+#  Run systemctl deamon-reload
+#  Run systemctl enable lockid.service
+#  Run systemctl start lockid.service

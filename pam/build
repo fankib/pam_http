@@ -1,0 +1,5 @@
+#!/bin/bash
+
+gcc -fPIC -c pam_http.c
+ld -x --shared -o pam_http.so pam_http.o
+sudo cp pam_http.so /lib/security/pam_http.so
