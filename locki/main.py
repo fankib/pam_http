@@ -24,6 +24,10 @@ class LockI(App):
 	txtServer = TextInput(text='http://192.168.1.57:5000', hint_text='Server', padding=30, font_size=30, multiline=False)
 	txtSecret = TextInput(text='', hint_text='Secret', padding=30, font_size=30, multiline=False, password=True)
 	lblResult = Label(text='')
+	
+	def on_pause(self):
+		return True
+	
 	def build(self):
 		# initialize components
 		lblHead = Label(text='LockI - v0.1', font_size=40)
