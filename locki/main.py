@@ -30,7 +30,7 @@ class LockI(App):
 	
 	def build(self):
 		# initialize components
-		lblHead = Label(text='LockI - v0.1', font_size=40)
+		lblHead = Label(text='LockI - v0.2', font_size=40)
 		btnUnlock = Button(text='unlock', size_hint_x=None, width=260, background_color=(0.75, 0.87, 0.78, 1.0), on_press=self.unlock)
 		btnLock = Button(text='lock', size_hint_x=None, width=200, on_press=self.lock)
 		
