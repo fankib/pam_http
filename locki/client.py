@@ -1,10 +1,11 @@
 import sys
 import json
-from Crypto.Hash import SHA256
-from Crypto.Random import random
-from Crypto.PublicKey import ElGamal
-from Crypto.Util.number import GCD
+import time
+import hashlib
+import base64
 from Crypto.Protocol import KDF
+from ecdsa import SigningKey, NIST256p
+
 
 is_linux = sys.platform == 'linux'
 is_android = sys.platform == 'linux4'
@@ -26,39 +27,63 @@ def urlopen(url):
 		return request.urlopen(url)
 	return None
 
+# BigEndian encoding (unsigned)
+# python3: x = int.from_bytes(x_bytes, byteorder='big')
+def bytesToInt(x_bytes):
+	factor = 1
+	x_bytes = bytearray(x_bytes[::-1]) # reverse
+	result = 0
+	for b in x_bytes:
+		result = result + factor*b
+		factor = factor*256
+	return result	
+
+def serializePublicKey(publicKey):
+	str_pubkey = publicKey.to_string()
+	return base64.b64encode(str_pubkey)
+
+def createPublicKeyFromSecret(secret):
+	x = createSecretKey(secret)
+	y = createPublicKey(x)
+	return serializePublicKey(y)
+
 def createSecretKey(secret):
-	x_bytes = KDF.PBKDF2(secret, b'sjxA9e2$', 255, count=1000)
-	x = int.from_bytes(x_bytes, byteorder='big')
-	if ( not GCD(x,modulus-1)==1 ):
-		x = modulus - 2 - x
-	return x
+	x_bytes = KDF.PBKDF2(secret, b'sjxA9e2$', 32, count=1000)	
+	x = bytesToInt(x_bytes)	
+	if ( x <= 1 or x >= NIST256p.order ):
+		raise Error('secret key out of range')
+	return SigningKey.from_secret_exponent(x, curve=NIST256p, hashfunc=hashlib.sha256)
 
 def createPublicKey(secretKey):
-	return pow(generator, secretKey, modulus)
+	return secretKey.verifying_key;
 	
 def readChallenge():
 	f = urlopen(server+'/challenge')
 	return f.read(23)
 	
 def sendUnlockToken(token):
-	f = urlopen(server+'/unlock/'+str(token[0])+'/'+str(token[1]))
+	f = urlopen(server+'/unlock/'+token)
 	return f.readline().decode('ASCII')
 
 def sendLockToken(token):
-	f = urlopen(server+'/lock/'+str(token[0])+'/'+str(token[1]))
+	f = urlopen(server+'/lock/'+token)
 	return f.readline().decode('ASCII')
 	
 def createToken(secret):
-	#x = 13151747660648615115260060218559997010120301609838596523552001639199686726228225369276114323052071670671403051109475002153764157620721349049715844170656676054539693280091031570490866829463764595178026316391813505141511337568780012560000543800064682527787730753459670196247907263499630514909329996445363545289785008549290608740616371048997026591211818691761707824431143260192485591100857559150612019051517254971384946919148837839468320542853134752644817111132407932362488764871920422566872117000725422119595414362964331828322285069221701520286423371103178740486683348769033041881114503663701348305519753157110862671923
-	x = createSecretKey(secret)
-	key = ElGamal.construct([modulus, generator, createPublicKey(x), x])
+	ts_start = time.time()	
+	key = createSecretKey(secret)
+	ts_createSecret = time.time()		
 	challenge = readChallenge()
-	h = SHA256.new(challenge).digest()
-	while 1:
-		k = random.StrongRandom().randint(1,key.p-1)
-		if GCD(k,key.p-1)==1: break
-	sig = key.sign(h,k)
-	return sig
+	ts_challenge = time.time()
+	sig = key.sign_deterministic(challenge)
+	ts_sig = time.time()
+	
+	# log timestamps:
+	print('createSecret: ', (ts_createSecret - ts_start)*1000)	
+	print('read challenge: ', (ts_challenge - ts_createSecret)*1000)	
+	print('sig :', (ts_sig - ts_challenge)*1000)
+	
+	return (base64.urlsafe_b64encode(sig)).decode('ASCII')
 	
 def unlock(secret):
 	return sendUnlockToken(createToken(secret))
@@ -67,10 +92,8 @@ def lock(secret):
 	return sendLockToken(createToken(secret))
 	
 if __name__ == '__main__':
-	secret = 'supersecret'
-	x = createSecretKey(secret)
-	y = createPublicKey(x)
-	print('x', x)
-	print('y', y)
+	secret = 'supersecret'	
+	y = createPublicKeyFromSecret(secret)
+	print('y', y.decode('ASCII'))
 	print(unlock(secret))
 	

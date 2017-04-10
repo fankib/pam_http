@@ -4,7 +4,6 @@ After=network.target
 
 [Service]
 Environment="DISPLAY=:0"
-Environment="USER_SECRET=<hash-of-new-secret>"
 Type=simple
 User=<user-t-ounlock>
 ExecStart=/usr/bin/python <path-to-repo>/lockid/server.py

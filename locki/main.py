@@ -21,7 +21,7 @@ if is_linux:
 	os.environ['JAVA_HOME'] = '/usr/lib/jvm/java-8-openjdk/'
 
 class LockI(App):
-	txtServer = TextInput(text='http://192.168.1.57:5000', hint_text='Server', padding=30, font_size=30, multiline=False)
+	txtServer = TextInput(text='http://fy03.bfh.ch:5000', hint_text='Server', padding=30, font_size=30, multiline=False)
 	txtSecret = TextInput(text='', hint_text='Secret', padding=30, font_size=30, multiline=False, password=True)
 	lblResult = Label(text='')
 	
@@ -72,9 +72,12 @@ class LockI(App):
 	def doAction(self, action):
 		if is_android:			
 			vibrator.vibrate(0.1)
-		client.server = self.txtServer.text
-		self.lblResult.text = action(self.txtSecret.text.encode('ASCII'))
-		Clock.schedule_once(self.resetResult, 10)
+		try:
+			client.server = self.txtServer.text
+			self.lblResult.text = action(self.txtSecret.text.encode('ASCII'))
+			Clock.schedule_once(self.resetResult, 10)
+		except Exception as e: 
+			self.lblResult.text = "Exception: " + str(e)
 	
 	def unlock(self, event):
 		self.doAction(client.unlock)

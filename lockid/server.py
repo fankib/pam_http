@@ -3,19 +3,16 @@ import time
 import os
 import os.path
 import json
-from flask import Flask
-from Crypto.Hash import SHA256
+import hashlib
+import base64
 from Crypto.Random import random
-from Crypto.PublicKey import ElGamal
+from flask import Flask
 from subprocess import call
-
+from ecdsa import VerifyingKey, NIST256p, BadSignatureError
 
 file_config = 'lockid.config'
 file_challenge = '/tmp/challenge'
 file_http_success = '/tmp/http_success'
-#default_user_hash = 'f75778f7425be4db0369d09af37a6c2b9a83dea0e53e7bd57412e4b060e607f7' #supersecret
-
-# "y": "9839048587665537347297745996269176812347054340950860355708728554724422654849820719409837751410449321901874938902871277154007809942591059332748396381758115465270630137111827444085024440498044069714771765587941527278557111758785627864517360378547706636839802409479632295716658745940589716786835705458922433721083857751924815759522324615086325061398847694985947587486896546017366133071039186344777945373266475786555472349588683057994524554925332969798187117071712577767338634538416900913002956494870324616054272922933392549268454459111023144018712492525432429782647875877635354516695029498349860832419090117549583833275",
 
 # init config:
 configPath = os.path.dirname(os.path.abspath(__file__)) + '/' + file_config;
@@ -25,9 +22,7 @@ max_challenge_age = int(config['max_challenge_age'])
 user_name = config['user_name']
 command_unlock = config['command_unlock'].split()
 command_lock = config['command_lock'].split()
-generator = int(config['g'])
-modulus = int(config['p'])
-publicKey = int(config['y'])
+public_key = VerifyingKey.from_string(base64.b64decode(config['y']), curve=NIST256p, hashfunc=hashlib.sha256)
 
 print(configPath)
 
@@ -61,13 +56,15 @@ def validChallenge():
 	return age < max_challenge_age
 	
 	
-def validToken(t, s):
-	key = ElGamal.construct([modulus, generator, publicKey])
+def validToken(token):
+	signature = base64.urlsafe_b64decode(token)	
 	challenge = readChallenge()
-	h = SHA256.new(challenge).digest()
-	if(key.verify(h, [int(t),int(s)])):
+	try:
+		public_key.verify(signature, challenge)
 		generateChallenge()
 		return True
+	except BadSignatureError as b :
+		print('bad signature')		
 	return False
 	
 def grantAccess():
@@ -90,25 +87,25 @@ def index():
 
 @app.route('/challenge')
 def challenge():
-	if ( not validChallenge()):
+	if ( not validChallenge() ):
 		generateChallenge()
 	return readChallenge()
 
-@app.route('/unlock/<t>/<s>')
-def unlock(t, s):
+@app.route('/unlock/<t>')
+def unlock(t):
 	if ( not validChallenge()):
 		return 'challenge too old\n';
-	if ( validToken(t, s) ):
+	if ( validToken(t) ):
 		grantAccess()
 		unlockScreen()
 		return 'ok\n';
 	return 'notok\n';
 	
-@app.route('/lock/<t>/<s>')
-def lock(t, s):
+@app.route('/lock/<t>')
+def lock(t):
 	if ( not validChallenge() ):
 		return 'challenge too old \n'
-	if ( validToken(t, s) ):
+	if ( validToken(t) ):
 		lockScreen();
 		return 'locked\n'
 	return 'notok\n'
