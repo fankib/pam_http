@@ -27,7 +27,7 @@ In additional: the used files to exchange inter process data are only visible to
 ## attack on the network level
 There is no way to prevent malicious behaviour on the network level.
 But this is no problem, because the traffic does not reveal any secrets.
-Captured, valid tokens expires after their first use or 10 seconds.
+Captured, valid tokens expires after their first use or 10 seconds this prevents a man-in-the-middle to collect valid tokens for a later usage.
 Or when the next valid token is received.
 Also the challenge expries after 3 seconds to avoid replay attacks.
 
