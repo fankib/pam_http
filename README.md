@@ -69,7 +69,7 @@ The configuration is located under `lockid/lockid.config`.
 run `$ python ./locki/main.py`
 or build with buildozer an android app: `[./locki]$ buildozer android debug deploy run`
 
-# Generate new secret
+# Generate new secrets
 As it is not recommended to use the default password 'supersecret' in any way, you have to generate a new secret. 
 
 Use the python shell to acomplish this:
