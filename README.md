@@ -41,19 +41,22 @@ There exists 3 parts:
  * the locki app: a python script for linux or with buildozer on android. For the user to interact with the system.
 
 ## pam_http.so
-Its a really easy module: it reads the content from /tmp/http_success and when there is an entry, no older than 10 seconds it pam-authenticates it.
+Its a simple module: it reads the content from /tmp/http_success and when there is an entry, no older than 10 seconds it pam-authenticates it.
 After a successfull authentication the file is cleared.
 
 ## lockid - webservice
 The daemon creates a challenge and provides it under 0.0.0.0:5000/challenge. A client is authenticated when he can solve the challenge in this way:
-token = hash(challenge || hash(secret)). To avoid replay attacks: a challenge is only available for 3 seconds and only valid once.
-The deamon does not need to know the secret in plaintext. It can be substituated with hash_secret = hash(secret). 
+token = sign_sk(challenge). To avoid replay attacks: a challenge is only available for 3 seconds and only valid once.
+Due to public-key-crypto the deamon does not need to know the secret in plaintext. 
 
 ## locki - the app
-This is a simple implementation of a client. It provides a form for the server to connect and the secret to input.
+This is a implementation of a client. It provides a formular to input the server and the secret.
 
 # Installation 
 Install all the dependencies for python or buildozer first (or when it fails)..
+
+at least you need: kivy,plyer,pycrypto,ecdsa
+`sudo pip install kivy plyer pycrypto ecdsa`
 
 ## pam_http:
 run the script `$ ./pam/build`
@@ -61,6 +64,7 @@ run the script `$ ./pam/build`
 ## lockid:
 run `$ python ./lockid/server.py`
 or use the template under ./systemd/lockid.service to create a systemd service (instructions in the file)
+The configuration is located under `lockid/lockid.config`.
 
 ## locki:
 run `$ python ./locki/main.py`
@@ -69,15 +73,15 @@ or build with buildozer an android app: `[./locki]$ buildozer android debug depl
 # Generate new secret
 As it is not recommended to use the default password 'supersecret' in any way, you have to generate a new secret. 
 
-Use the python shell for this:
+Use the python shell to acomplish this:
 
 ```cd ./locki/
 python
 >>> import client
->>> client.createMyDigest(b'<new-secret>')
-'5a472ea70d5c410a9a557794cacec6227f8c5b08e31547140c4f4ee598812918'
+>>> client.createPublicKeyFromSecret(b'<new-secret>')
+b'bzi8FV6aDp870moRHeiHOd45ehlYiKAZupaAoPYKcXsJy/igvNN9PgiJCL0aJ9hwJQn7aLMenGNUOg0Fw2lSwQ=='
 ctrl+d```
 
-configure the lockid with the new hash
+configure the lockid-deamon with the new publickey (the y-attribute)
 
 
