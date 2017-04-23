@@ -86,6 +86,6 @@ b'bzi8FV6aDp870moRHeiHOd45ehlYiKAZupaAoPYKcXsJy/igvNN9PgiJCL0aJ9hwJQn7aLMenGNUOg
 <ctrl+d>
 ```
 
-configure the lockid-deamon with the new publickey (the y-attribute)
+configure the lockid-deamon with the new publickey (the 'public_key'-attribute)
 
 

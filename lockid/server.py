@@ -22,7 +22,7 @@ max_challenge_age = int(config['max_challenge_age'])
 user_name = config['user_name']
 command_unlock = config['command_unlock'].split()
 command_lock = config['command_lock'].split()
-public_key = VerifyingKey.from_string(base64.b64decode(config['y']), curve=NIST256p, hashfunc=hashlib.sha256)
+public_key = VerifyingKey.from_string(base64.b64decode(config['public_key']), curve=NIST256p, hashfunc=hashlib.sha256)
 
 print(configPath)
 
