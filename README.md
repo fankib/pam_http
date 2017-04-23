@@ -15,19 +15,21 @@ But its not on my priority list).
 # Security
 It is assumed, that the adversery has no control over the user account to authenticate, root and the used http-client (aka smartphone).
 Under this assumptions the goal is that:
- * no other party can learn something over the shared secret
+ * no other party can learn something about the secret
  * no other party can use captured data without beeing noticed.
- * no other party can not "dos" the system with caputred data.
 
 ## compromised user account
-This can be prevented with correct pam configuration. Do not allow this authentication method for switching user services.
-The used files to exchange inter process data are only visible to the user and root.
+This can be prevented with correct pam configuration. Do not use this method for `su`-authentication:
+if you provide a valid token, every user on the system is allowed to authenticate as you.
+That's why we have `sudo`.
+In additional: the used files to exchange inter process data are only visible to the user and root.
 
-## attack over the communication
+## attack on the network level
 There is no way to prevent malicious behaviour on the network level.
 But this is no problem, because the traffic does not reveal any secrets.
 Captured, valid tokens expires after their first use or 10 seconds.
 Or when the next valid token is received.
+Also the challenge expries after 3 seconds to avoid replay attacks.
 
 ## detect malicious behaviour
 When there still is a way to break in the system, the token should expire. 
