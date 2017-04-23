@@ -23,6 +23,7 @@ This can be prevented with correct pam configuration. Do not use this method for
 if you provide a valid token, every user on the system is allowed to authenticate as you.
 That's why we have `sudo`.
 In additional: the used files to exchange inter process data are only visible to the user and root.
+Note that the config of the lockid-deamon is a possibility to escalate privileges: if the user changes the configured 'username' to 'root'.
 
 ## attack on the network level
 There is no way to prevent malicious behaviour on the network level.
