@@ -75,12 +75,12 @@ As it is not recommended to use the default password 'supersecret' in any way, y
 Use the python shell to acomplish this:
 
 ```
-cd ./locki/
-python
+$ cd ./locki/
+$ python
 >>> import client
 >>> client.createPublicKeyFromSecret(b'<new-secret>')
 b'bzi8FV6aDp870moRHeiHOd45ehlYiKAZupaAoPYKcXsJy/igvNN9PgiJCL0aJ9hwJQn7aLMenGNUOg0Fw2lSwQ=='
-ctrl+d
+<ctrl+d>
 ```
 
 configure the lockid-deamon with the new publickey (the y-attribute)
