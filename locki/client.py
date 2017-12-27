@@ -4,7 +4,7 @@ import time
 import hashlib
 import base64
 from Crypto.Protocol import KDF
-from ecdsa import SigningKey, NIST256p
+from ecdsa import SigningKey, SECP256k1
 
 
 is_linux = sys.platform == 'linux'
@@ -50,9 +50,9 @@ def createPublicKeyFromSecret(secret):
 def createSecretKey(secret):
 	x_bytes = KDF.PBKDF2(secret, b'sjxA9e2$', 32, count=1000)	
 	x = bytesToInt(x_bytes)	
-	if ( x <= 1 or x >= NIST256p.order ):
+	if ( x <= 1 or x >= SECP256k1.order ):
 		raise Error('secret key out of range')
-	return SigningKey.from_secret_exponent(x, curve=NIST256p, hashfunc=hashlib.sha256)
+	return SigningKey.from_secret_exponent(x, curve=SECP256k1, hashfunc=hashlib.sha256)
 
 def createPublicKey(secretKey):
 	return secretKey.verifying_key;
