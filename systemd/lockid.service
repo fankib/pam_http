@@ -5,8 +5,8 @@ After=network.target
 [Service]
 Environment="DISPLAY=:0"
 Type=simple
-User=<user-to-unlock>
-ExecStart=/usr/bin/python <path-to-repo>/lockid/server.py
+User=<user-to-run-the-service-NOT-THE-USER-TO-UNLOCK>
+ExecStart=/usr/bin/python <path-to-repo-not-editable-for-the-user-to-unlock>/lockid/server.py
 Restart=on-abort
 
 [Install]
